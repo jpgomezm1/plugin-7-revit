@@ -1,0 +1,153 @@
+<Window x:Class="DocumentationGeneratorAI.RevitAddin.Views.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:converters="clr-namespace:DocumentationGeneratorAI.RevitAddin.Converters"
+        Title="Documentation Generator AI"
+        Width="1100" Height="700"
+        MinWidth="800" MinHeight="500"
+        WindowStartupLocation="CenterScreen">
+    <Window.Resources>
+        <converters:BoolToVisibilityConverter x:Key="BoolToVisibility" />
+        <converters:InverseBoolConverter x:Key="InverseBool" />
+
+        <Style TargetType="Label" x:Key="FieldLabel">
+            <Setter Property="FontWeight" Value="SemiBold" />
+            <Setter Property="Margin" Value="0,8,0,2" />
+        </Style>
+        <Style TargetType="ComboBox" x:Key="FieldCombo">
+            <Setter Property="Margin" Value="0,0,0,4" />
+            <Setter Property="Padding" Value="6,4" />
+        </Style>
+        <Style TargetType="Button" x:Key="ActionButton">
+            <Setter Property="Padding" Value="16,8" />
+            <Setter Property="Margin" Value="0,4" />
+            <Setter Property="FontSize" Value="13" />
+        </Style>
+    </Window.Resources>
+
+    <Grid Margin="12">
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="240" />
+            <ColumnDefinition Width="160" />
+            <ColumnDefinition Width="*" />
+        </Grid.ColumnDefinitions>
+
+        <!-- Left Panel: Configuration -->
+        <Border Grid.Column="0" BorderBrush="#DDD" BorderThickness="0,0,1,0" Padding="0,0,12,0">
+            <StackPanel>
+                <TextBlock Text="Configuration" FontSize="16" FontWeight="Bold" Margin="0,0,0,12" />
+
+                <Label Content="Document Type" Style="{StaticResource FieldLabel}" />
+                <ComboBox ItemsSource="{Binding DocumentTypes}"
+                          SelectedItem="{Binding SelectedDocumentType}"
+                          Style="{StaticResource FieldCombo}" />
+
+                <Label Content="Project Phase" Style="{StaticResource FieldLabel}" />
+                <ComboBox ItemsSource="{Binding ProjectPhases}"
+                          SelectedItem="{Binding SelectedPhase}"
+                          Style="{StaticResource FieldCombo}" />
+
+                <Label Content="Target Audience" Style="{StaticResource FieldLabel}" />
+                <ComboBox ItemsSource="{Binding AudienceTypes}"
+                          SelectedItem="{Binding SelectedAudience}"
+                          Style="{StaticResource FieldCombo}" />
+
+                <Label Content="Detail Level" Style="{StaticResource FieldLabel}" />
+                <ComboBox ItemsSource="{Binding DetailLevels}"
+                          SelectedItem="{Binding SelectedDetailLevel}"
+                          Style="{StaticResource FieldCombo}" />
+
+                <CheckBox Content="Include Quantities Summary"
+                          IsChecked="{Binding IncludeQuantities}"
+                          Margin="0,12,0,4" />
+
+                <CheckBox Content="Use Company Template"
+                          IsChecked="{Binding UseCompanyTemplate}"
+                          Margin="0,4,0,0" />
+            </StackPanel>
+        </Border>
+
+        <!-- Center Panel: Actions -->
+        <Border Grid.Column="1" Padding="12,0">
+            <StackPanel VerticalAlignment="Top">
+                <TextBlock Text="Actions" FontSize="16" FontWeight="Bold" Margin="0,0,0,12" />
+
+                <Button Content="{Binding IsGenerating, Converter={StaticResource InverseBool}, ConverterParameter='Generate|Generating...'}"
+                        Command="{Binding GenerateCommand}"
+                        Style="{StaticResource ActionButton}"
+                        Background="#2196F3" Foreground="White" />
+
+                <Button Content="Cancel"
+                        Command="{Binding CancelCommand}"
+                        Visibility="{Binding IsGenerating, Converter={StaticResource BoolToVisibility}}"
+                        Style="{StaticResource ActionButton}"
+                        Background="#F44336" Foreground="White" />
+
+                <Separator Margin="0,12" />
+
+                <Button Content="Export to Markdown"
+                        Command="{Binding ExportMarkdownCommand}"
+                        Style="{StaticResource ActionButton}" />
+
+                <Button Content="Export to DOCX"
+                        Command="{Binding ExportDocxCommand}"
+                        Style="{StaticResource ActionButton}"
+                        ToolTip="Coming in Phase 2" />
+
+                <Button Content="Export to PDF"
+                        Command="{Binding ExportPdfCommand}"
+                        Style="{StaticResource ActionButton}"
+                        ToolTip="Coming in Phase 3" />
+
+                <!-- Progress bar during generation -->
+                <ProgressBar IsIndeterminate="True"
+                             Height="4" Margin="0,12,0,0"
+                             Visibility="{Binding IsGenerating, Converter={StaticResource BoolToVisibility}}" />
+            </StackPanel>
+        </Border>
+
+        <!-- Right Panel: Result -->
+        <Grid Grid.Column="2">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="*" />
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="Auto" />
+            </Grid.RowDefinitions>
+
+            <!-- Document preview -->
+            <Border Grid.Row="0" BorderBrush="#DDD" BorderThickness="1" Margin="12,0,0,0">
+                <TextBox Text="{Binding GeneratedText, UpdateSourceTrigger=PropertyChanged}"
+                         AcceptsReturn="True"
+                         TextWrapping="Wrap"
+                         VerticalScrollBarVisibility="Auto"
+                         HorizontalScrollBarVisibility="Disabled"
+                         FontFamily="Consolas"
+                         FontSize="12"
+                         Padding="8"
+                         BorderThickness="0" />
+            </Border>
+
+            <!-- Warnings panel -->
+            <Border Grid.Row="1" Margin="12,8,0,0"
+                    Background="#FFF3E0" BorderBrush="#FFB74D" BorderThickness="1" CornerRadius="4"
+                    Padding="8"
+                    Visibility="{Binding HasWarnings, Converter={StaticResource BoolToVisibility}}">
+                <StackPanel>
+                    <TextBlock Text="Extraction Warnings" FontWeight="Bold" Foreground="#E65100" Margin="0,0,0,4" />
+                    <ItemsControl ItemsSource="{Binding Warnings}">
+                        <ItemsControl.ItemTemplate>
+                            <DataTemplate>
+                                <TextBlock Text="{Binding StringFormat='&#x2022; {0}'}" Foreground="#BF360C" TextWrapping="Wrap" Margin="0,1" />
+                            </DataTemplate>
+                        </ItemsControl.ItemTemplate>
+                    </ItemsControl>
+                </StackPanel>
+            </Border>
+
+            <!-- Status bar -->
+            <Border Grid.Row="2" Margin="12,8,0,0" Background="#F5F5F5" Padding="8,4">
+                <TextBlock Text="{Binding StatusText}" FontSize="11" Foreground="#666" />
+            </Border>
+        </Grid>
+    </Grid>
+</Window>

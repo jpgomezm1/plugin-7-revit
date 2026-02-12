@@ -1,0 +1,30 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <RootNamespace>DocumentationGeneratorAI.RevitAddin</RootNamespace>
+    <AssemblyName>DocumentationGeneratorAI</AssemblyName>
+    <UseWPF>true</UseWPF>
+    <EnableDynamicLoading>true</EnableDynamicLoading>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="RevitAPI">
+      <HintPath>C:\Program Files\Autodesk\Revit 2025\RevitAPI.dll</HintPath>
+      <Private>false</Private>
+    </Reference>
+    <Reference Include="RevitAPIUI">
+      <HintPath>C:\Program Files\Autodesk\Revit 2025\RevitAPIUI.dll</HintPath>
+      <Private>false</Private>
+    </Reference>
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\Core\Core.csproj" />
+    <ProjectReference Include="..\Shared\Shared.csproj" />
+    <ProjectReference Include="..\RevitModelExtractor\RevitModelExtractor.csproj" />
+    <ProjectReference Include="..\AiClient\AiClient.csproj" />
+    <ProjectReference Include="..\DocTemplates\DocTemplates.csproj" />
+    <ProjectReference Include="..\DocExport\DocExport.csproj" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Resources\icon-32.png" />
+    <Resource Include="Resources\icon-16.png" />
+  </ItemGroup>
+</Project>
