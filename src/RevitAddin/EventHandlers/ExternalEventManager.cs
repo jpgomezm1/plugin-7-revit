@@ -1,5 +1,6 @@
 using Autodesk.Revit.UI;
 using DocumentationGeneratorAI.Core.Models;
+using DocumentationGeneratorAI.Core.Testing;
 using DocumentationGeneratorAI.RevitModelExtractor;
 using DocumentationGeneratorAI.Shared.Logging;
 
@@ -11,6 +12,7 @@ public sealed class ExternalEventManager : IDisposable
     private readonly ExternalEvent _externalEvent;
     private readonly IPluginLogger _logger;
     private UIApplication? _uiApp;
+    private bool _isDemoMode;
 
     public ExternalEventManager(IPluginLogger logger)
     {
@@ -25,8 +27,20 @@ public sealed class ExternalEventManager : IDisposable
         _uiApp = uiApp;
     }
 
+    public void EnableDemoMode()
+    {
+        _isDemoMode = true;
+        _logger.Info("ExternalEventManager: Demo mode enabled — will return sample ModelContext.");
+    }
+
     public Task<ModelContext> RequestExtractionAsync()
     {
+        if (_isDemoMode)
+        {
+            _logger.Info("Demo mode: Returning sample ModelContext (no Revit API call).");
+            return Task.FromResult(DemoModelContextFactory.Create());
+        }
+
         var tcs = new TaskCompletionSource<ModelContext>();
         _handler.SetCompletionSource(tcs);
 

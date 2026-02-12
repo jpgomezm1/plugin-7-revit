@@ -164,6 +164,15 @@ $RECYCLE.BIN/
 .AppleDouble
 .LSOverride
 
+# Secrets / environment files
+.env
+.env.*
+*.env
+appsettings.*.json
+!appsettings.json
+secrets.json
+credentials.json
+
 # Misc
 *.swp
 *~

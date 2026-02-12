@@ -101,6 +101,16 @@ public sealed class OpenAiDocumentGenerator : IAiDocumentGenerator, IDisposable
 
                 return MapToGeneratedDocument(aiResponse!);
             }
+            catch (JsonException ex) when (attempt < PluginConstants.MaxRetryAttempts)
+            {
+                _logger.Warning($"Attempt {attempt}: Malformed JSON response - {ex.Message}. Retrying...");
+                await Task.Delay(TimeSpan.FromSeconds(Math.Pow(2, attempt)), cancellationToken);
+            }
+            catch (JsonException ex)
+            {
+                _logger.Error($"Attempt {attempt}: Malformed JSON response after all retries - {ex.Message}");
+                throw new InvalidOperationException($"AI returned malformed JSON after all retry attempts: {ex.Message}", ex);
+            }
             catch (HttpRequestException ex) when (attempt < PluginConstants.MaxRetryAttempts)
             {
                 _logger.Warning($"Attempt {attempt}: HTTP error - {ex.Message}. Retrying...");

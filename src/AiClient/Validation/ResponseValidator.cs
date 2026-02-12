@@ -30,6 +30,18 @@ public sealed class ResponseValidator
         if (response.Metadata is null)
             return (false, "Response metadata is null.");
 
+        if (string.IsNullOrWhiteSpace(response.Metadata.ProjectName))
+            return (false, "Response metadata projectName is empty.");
+
+        if (string.IsNullOrWhiteSpace(response.Metadata.Phase))
+            return (false, "Response metadata phase is empty.");
+
+        if (string.IsNullOrWhiteSpace(response.Metadata.Audience))
+            return (false, "Response metadata audience is empty.");
+
+        if (string.IsNullOrWhiteSpace(response.Metadata.DetailLevel))
+            return (false, "Response metadata detailLevel is empty.");
+
         return (true, null);
     }
 }

@@ -236,10 +236,12 @@ public sealed class MainViewModel : ViewModelBase
 
             if (dialog.ShowDialog() == true)
             {
-                // Update document with any edits
-                _currentDocument = ParseEditedDocument(GeneratedText);
+                // Write the current text (including any user edits) directly to file
+                var directory = System.IO.Path.GetDirectoryName(dialog.FileName);
+                if (!string.IsNullOrEmpty(directory) && !System.IO.Directory.Exists(directory))
+                    System.IO.Directory.CreateDirectory(directory);
 
-                await _markdownExporter.ExportAsync(_currentDocument, dialog.FileName);
+                await System.IO.File.WriteAllTextAsync(dialog.FileName, GeneratedText);
                 StatusText = $"Exported to {dialog.FileName}";
                 _logger.Info($"Document exported to {dialog.FileName}");
             }
@@ -251,22 +253,4 @@ public sealed class MainViewModel : ViewModelBase
         }
     }
 
-    private GeneratedDocument ParseEditedDocument(string markdown)
-    {
-        // If user edited the text, create a simple document with the full text as a single section
-        if (_currentDocument != null)
-        {
-            // Keep the original structure but update content if text matches original format
-            return _currentDocument;
-        }
-
-        return new GeneratedDocument
-        {
-            Title = "Edited Document",
-            Sections = new List<DocumentSection>
-            {
-                new() { Heading = "Content", Content = markdown, Order = 1 }
-            }
-        };
-    }
 }
