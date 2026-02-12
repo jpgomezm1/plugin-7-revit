@@ -164,6 +164,9 @@ $RECYCLE.BIN/
 .AppleDouble
 .LSOverride
 
+# Claude Code local settings
+.claude/
+
 # Secrets / environment files
 .env
 .env.*
