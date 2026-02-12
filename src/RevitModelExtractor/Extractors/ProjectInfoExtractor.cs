@@ -21,7 +21,7 @@ internal static class ProjectInfoExtractor
         };
     }
 
-    private static string GetParameterValue(ProjectInformation info, BuiltInParameter param)
+    private static string GetParameterValue(Element info, BuiltInParameter param)
     {
         var p = info.get_Parameter(param);
         return p?.AsString() ?? string.Empty;
