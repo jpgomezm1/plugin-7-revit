@@ -19,6 +19,8 @@ public static class ServiceLocator
     public static IPluginLogger Logger { get; private set; } = null!;
     public static bool IsDemoMode { get; private set; }
 
+    private static IDisposable? _aiGeneratorDisposable;
+
     public static void Initialize(ExternalEventManager eventManager, IPluginLogger logger)
     {
         ExternalEventManager = eventManager;
@@ -47,7 +49,9 @@ public static class ServiceLocator
                 MaxOutputTokens = EnvironmentConfig.MaxOutputTokens,
                 TimeoutSeconds = EnvironmentConfig.TimeoutSeconds
             };
-            aiGenerator = new OpenAiDocumentGenerator(settings, logger);
+            var openAiGenerator = new OpenAiDocumentGenerator(settings, logger);
+            aiGenerator = openAiGenerator;
+            _aiGeneratorDisposable = openAiGenerator;
         }
 
         var templateProvider = new TemplateProvider();
@@ -55,5 +59,11 @@ public static class ServiceLocator
         MarkdownExporter = new MarkdownExporter();
 
         logger.Info($"ServiceLocator initialized.{(IsDemoMode ? " [DEMO MODE]" : "")}");
+    }
+
+    public static void Cleanup()
+    {
+        _aiGeneratorDisposable?.Dispose();
+        _aiGeneratorDisposable = null;
     }
 }

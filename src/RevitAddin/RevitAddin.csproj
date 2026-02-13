@@ -27,4 +27,18 @@
     <Resource Include="Resources\icon-32.png" />
     <Resource Include="Resources\icon-16.png" />
   </ItemGroup>
+  <ItemGroup>
+    <None Include="DocumentationGeneratorAI.addin" CopyToOutputDirectory="PreserveNewest" />
+  </ItemGroup>
+  <Target Name="DeployAddinManifest" AfterTargets="Build">
+    <PropertyGroup>
+      <_AddinDeployDir>C:\ProgramData\Autodesk\Revit\Addins\2025</_AddinDeployDir>
+      <_AddinSourceFile>$(TargetDir)DocumentationGeneratorAI.addin</_AddinSourceFile>
+      <_AddinDeployFile>$(_AddinDeployDir)\DocumentationGeneratorAI.addin</_AddinDeployFile>
+    </PropertyGroup>
+    <Copy SourceFiles="$(_AddinSourceFile)" DestinationFiles="$(_AddinDeployFile)" Condition="Exists('$(_AddinDeployDir)')" />
+    <Exec Command="powershell -NoProfile -Command &quot;(Get-Content '$(_AddinDeployFile)') -replace '__ASSEMBLY_PATH__','$(TargetPath)' | Set-Content '$(_AddinDeployFile)'&quot;" Condition="Exists('$(_AddinDeployFile)')" />
+    <Message Text="Deployed .addin manifest to $(_AddinDeployFile) with assembly path $(TargetPath)" Importance="high" Condition="Exists('$(_AddinDeployFile)')" />
+    <Warning Text="Revit Addins folder not found at $(_AddinDeployDir). Install Revit 2025 or copy the .addin file manually." Condition="!Exists('$(_AddinDeployDir)')" />
+  </Target>
 </Project>

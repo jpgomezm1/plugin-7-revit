@@ -12,10 +12,19 @@ namespace DocumentationGeneratorAI.RevitAddin.Commands;
 [Regeneration(RegenerationOption.Manual)]
 public class GenerateDocumentationCommand : IExternalCommand
 {
+    private static System.Windows.Window? _activeWindow;
+
     public Result Execute(ExternalCommandData commandData, ref string message, ElementSet elements)
     {
         try
         {
+            // If a window is already open, bring it to front
+            if (_activeWindow is not null)
+            {
+                _activeWindow.Activate();
+                return Result.Succeeded;
+            }
+
             // Check API key
             if (!EnvironmentConfig.IsApiKeyConfigured())
             {
@@ -32,9 +41,6 @@ public class GenerateDocumentationCommand : IExternalCommand
                 return Result.Failed;
             }
 
-            // Store UIApplication reference for external event
-            ServiceLocator.ExternalEventManager.SetUIApplication(commandData.Application);
-
             // Create ViewModel and Window
             var viewModel = new MainViewModel(
                 ServiceLocator.Orchestrator,
@@ -47,6 +53,8 @@ public class GenerateDocumentationCommand : IExternalCommand
                 DataContext = viewModel
             };
 
+            window.Closed += (_, _) => _activeWindow = null;
+            _activeWindow = window;
             window.Show(); // Modeless — does not block Revit
 
             return Result.Succeeded;

@@ -56,6 +56,11 @@ public sealed class AsyncRelayCommand : ICommand
         {
             await _execute(parameter);
         }
+        catch (Exception)
+        {
+            // Swallow to prevent async void from crashing the Revit process.
+            // Individual commands should handle their own error reporting.
+        }
         finally
         {
             _isExecuting = false;

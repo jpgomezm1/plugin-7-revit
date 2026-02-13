@@ -2,7 +2,7 @@
 <RevitAddIns>
   <AddIn Type="Application">
     <Name>Documentation Generator AI</Name>
-    <Assembly>C:\Users\JuanPablo\Desktop\irrelevant club projects\Procol_Projects\Test_Plugin_7\src\RevitAddin\bin\Debug\net8.0-windows\DocumentationGeneratorAI.dll</Assembly>
+    <Assembly>__ASSEMBLY_PATH__</Assembly>
     <FullClassName>DocumentationGeneratorAI.RevitAddin.App</FullClassName>
     <ClientId>a1b2c3d4-e5f6-7890-abcd-ef1234567890</ClientId>
     <VendorId>IrrelevantClub</VendorId>

@@ -43,17 +43,12 @@ public class App : IExternalApplication
                 ToolTip = PluginConstants.ButtonDescription
             };
 
-            // Try to set icons
+            // Try to set icons from embedded resources
             try
             {
-                var assemblyDir = Path.GetDirectoryName(assemblyPath) ?? string.Empty;
-                var largeIconPath = Path.Combine(assemblyDir, "Resources", "icon-32.png");
-                var smallIconPath = Path.Combine(assemblyDir, "Resources", "icon-16.png");
-
-                if (File.Exists(largeIconPath))
-                    buttonData.LargeImage = new BitmapImage(new Uri(largeIconPath));
-                if (File.Exists(smallIconPath))
-                    buttonData.Image = new BitmapImage(new Uri(smallIconPath));
+                var assemblyName = Assembly.GetExecutingAssembly().GetName().Name;
+                buttonData.LargeImage = new BitmapImage(new Uri($"pack://application:,,,/{assemblyName};component/Resources/icon-32.png"));
+                buttonData.Image = new BitmapImage(new Uri($"pack://application:,,,/{assemblyName};component/Resources/icon-16.png"));
             }
             catch
             {
@@ -82,6 +77,7 @@ public class App : IExternalApplication
     {
         try
         {
+            ServiceLocator.Cleanup();
             _externalEventManager?.Dispose();
             PluginLogger.Instance.Info("Documentation Generator AI shut down.");
         }

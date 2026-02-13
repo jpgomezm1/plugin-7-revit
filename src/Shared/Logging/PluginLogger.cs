@@ -24,11 +24,19 @@ public sealed class PluginLogger : IPluginLogger, IDisposable
 
     private PluginLogger()
     {
-        string logDirectory = PluginConstants.LogDirectory;
-        Directory.CreateDirectory(logDirectory);
+        try
+        {
+            string logDirectory = PluginConstants.LogDirectory;
+            Directory.CreateDirectory(logDirectory);
 
-        string logPath = Path.Combine(logDirectory, PluginConstants.LogFileName);
-        _writer = new StreamWriter(logPath, append: true) { AutoFlush = true };
+            string logPath = Path.Combine(logDirectory, PluginConstants.LogFileName);
+            _writer = new StreamWriter(logPath, append: true) { AutoFlush = true };
+        }
+        catch
+        {
+            // Fallback: plugin works without logging rather than failing to load
+            _writer = StreamWriter.Null;
+        }
     }
 
     public void Info(string message) => Write("INFO", message);

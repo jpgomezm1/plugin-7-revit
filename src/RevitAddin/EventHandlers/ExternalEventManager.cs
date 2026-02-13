@@ -11,7 +11,6 @@ public sealed class ExternalEventManager : IDisposable
     private readonly ModelExtractionEventHandler _handler;
     private readonly ExternalEvent _externalEvent;
     private readonly IPluginLogger _logger;
-    private UIApplication? _uiApp;
     private bool _isDemoMode;
 
     public ExternalEventManager(IPluginLogger logger)
@@ -20,11 +19,6 @@ public sealed class ExternalEventManager : IDisposable
         var extractor = new RevitModelExtractorService(logger);
         _handler = new ModelExtractionEventHandler(extractor, logger);
         _externalEvent = ExternalEvent.Create(_handler);
-    }
-
-    public void SetUIApplication(UIApplication uiApp)
-    {
-        _uiApp = uiApp;
     }
 
     public void EnableDemoMode()
